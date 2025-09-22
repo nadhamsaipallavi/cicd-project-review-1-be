@@ -121,7 +121,7 @@
     </dependencies>
 
     <build>
-        <finalName>property-management-system</finalName>
+        <finalName>propertybackend</finalName>
 
         <plugins>
             <!-- Compiler Plugin to support Java 17 -->

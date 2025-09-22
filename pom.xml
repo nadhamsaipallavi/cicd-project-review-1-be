@@ -14,7 +14,7 @@
     <groupId>com.propertymanagement</groupId>
     <artifactId>property-management-system</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <packaging>war</packaging>
+    <packaging>jar</packaging>
     <name>Property Management System</name>
     <description>Property Management System Backend</description>
 
@@ -24,17 +24,10 @@
     </properties>
 
     <dependencies>
-        <!-- Spring Boot Web -->
+        <!-- Spring Boot Web with embedded Tomcat -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-
-        <!-- Provided Tomcat for external deployment -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Spring Boot Data JPA -->
@@ -123,7 +116,7 @@
     </dependencies>
 
     <build>
-		 <finalName>propertybackend</finalName>
+        <finalName>propertybackend</finalName>
         <plugins>
             <!-- Spring Boot Maven Plugin -->
             <plugin>

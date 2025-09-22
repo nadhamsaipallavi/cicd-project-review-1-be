@@ -24,8 +24,13 @@ public class JwtTokenProvider {
     public JwtTokenProvider(
             @Value("${app.jwt.secret}") String jwtSecret,
             @Value("${app.jwt.expiration}") int jwtExpirationInMs) {
-        // Generate a secure key using the recommended method
-        this.key = Keys.secretKeyFor(SignatureAlgorithm.HS512);
+    	byte[] keyBytes = jwtSecret.getBytes();
+        if (keyBytes.length < 32) {
+            throw new IllegalArgumentException(
+                "JWT secret must be at least 32 bytes (256 bits) long for HS512"
+            );
+        }
+        this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes());
         this.jwtExpirationInMs = jwtExpirationInMs;
     }
 
@@ -33,7 +38,7 @@ public class JwtTokenProvider {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return generateToken(userDetails.getUsername());
     }
-    
+
     public String generateTokenForUser(UserDetails userDetails) {
         return generateToken(userDetails.getUsername());
     }
@@ -52,7 +57,7 @@ public class JwtTokenProvider {
                 .setSubject(subject)
                 .setIssuedAt(now)
                 .setExpiration(expiryDate)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -66,18 +71,19 @@ public class JwtTokenProvider {
     }
 
     private Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
 
     public boolean validateToken(String token) {
         try {
-            Jwts.parser().setSigningKey(key).parseClaimsJws(token);
+            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
             return true;
         } catch (Exception e) {
             return false;
         }
     }
-} 
+}
